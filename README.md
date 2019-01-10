@@ -1,4 +1,8 @@
-# React BlueKit [![CircleCI](https://circleci.com/gh/blueberryapps/react-bluekit/tree/master.svg?style=svg)](https://circleci.com/gh/blueberryapps/react-bluekit/tree/master) [![Dependency Status](https://dependencyci.com/github/blueberryapps/react-bluekit/badge)](https://dependencyci.com/github/blueberryapps/react-bluekit)
+# React UI Showcase
+
+This project is a fork of [React Bluekit](https://github.com/blueberryapps/react-bluekit)
+
+## React BlueKit [![CircleCI](https://circleci.com/gh/blueberryapps/react-bluekit/tree/master.svg?style=svg)](https://circleci.com/gh/blueberryapps/react-bluekit/tree/master) [![Dependency Status](https://dependencyci.com/github/blueberryapps/react-bluekit/badge)](https://dependencyci.com/github/blueberryapps/react-bluekit)
 
 ![BlueKit usage](http://bb-share.s3.amazonaws.com/BlueKit_usage.gif)
 
@@ -11,57 +15,24 @@ DEMO here: [http://bluekit.blueberry.io](http://bluekit.blueberry.io)
 ## Install
 
 ```sh
-$ npm install --save react-bluekit
+$ npm install --save loveholidays/react-ui-showcase
 ```
 
-You can use BlueKit via npm script or gulp
+You can use react-ui-showcase via npm script
 
 ## Npm script
 ```js
 "scripts": {
-  "bluekit": "bluekit --baseDir ./components --paths . --exclude \"./(Layout|StyledComponent).tsx\""
+  "ui:showcase": "react-ui-showcase --baseDir ./components --paths . --exclude \"./(Layout|StyledComponent).tsx\""
 }
 ```
-
-## Gulpfile configuration
-
-```js
-import createBlueKit from 'react-bluekit/lib/createBlueKit';
-
-createBlueKit({
-  // your directory where components are located
-  baseDir: `${__dirname}/src/browser`,
-  // relative paths from base dir where to look for components
-  paths: ['./components/', './auth'],
-  // relative paths from base dir of files or directories you want to exclude from indexing
-  exclude: ['./components/Foo'],
-  // set to true when providing simple components such as `export default function MyComponent() { <div>Hello</div> }`
-  noSpecialReplacements: true
-});
-```
-
-This will provide you with two gulp tasks: `build-bluekit` and `watch-bluekit`, which perform static analysis of your components.
-
-You can setup the build of BlueKit on application start and then watch components for changes by editing the `default` task to:
-
-```js
-// from gulp.task('default', ['server']); to:
-gulp.task('default', ['build-bluekit', 'server', 'watch-bluekit']);
-```
-
-Do not forget to add it to build process (for example on stage or production):
-```js
-gulp.task('build', ['build-bluekit', 'build-webpack']);
-// make sure that component build is before webpack
-```
-It will be built when needed.
 
 ## Add it to your project
 
 Look at the `example` directory, you only need to add:
 
 ```js
-import BlueKit from 'react-bluekit';
+import BlueKit from 'react-ui-showcase';
 import componentsIndex from '../componentsIndex';
 import React, { Component } from 'react';
 
@@ -100,7 +71,7 @@ open http://localhost:3000
 ```
 This will start the development server and then you can play with components in BlueKit.
 
-## Gulp tasks
+### Gulp tasks
 ```
 # generate svg icons from src/icons directory
 gulp svg-icon
@@ -118,5 +89,6 @@ BlueKit automatically hides props that don’t affect the component’s look.
 
 If you get some kind of weird error and BlueKit doesn't load at all, try to reset localStorage by running `localStorage.clear();`.
 
-## Made with love by
-[![](https://camo.githubusercontent.com/d88ee6842f3ff2be96d11488aa0d878793aa67cd/68747470733a2f2f7777772e676f6f676c652e636f6d2f612f626c75656265727279617070732e636f6d2f696d616765732f6c6f676f2e676966)](https://www.blueberry.io)
+## Made by
+[LoveHolidays](https://www.loveholidays.com)
+[Blueberry](https://www.blueberry.io)

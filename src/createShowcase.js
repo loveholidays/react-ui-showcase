@@ -5,7 +5,7 @@ import normalizePath from './libraries/normalizePath';
 import nunjucks from 'nunjucks';
 import path from 'path';
 import toSource from 'tosource';
-import {parse as docgenParse} from 'react-docgen';
+import {parse as docgenParse, resolver as docgenResolver} from 'react-docgen';
 
 const nunjuckEnv = nunjucks.configure(`${__dirname}/../nunjucks/`, {autoescape: false});
 nunjuckEnv.addFilter('escapeJsString', input => JSON.stringify(input).replace(/'/g, '\\\'').slice(1, -1));
@@ -65,7 +65,41 @@ function getDocgen(config, filePath) {
       .replace(/import Component from ["']react-pure-render\/component["']/, 'import {Component} from "react"')
       .replace(/export default .*\((\w*)\)+/m, 'export default $1')
   }
-  return docgenParse(content);
+  return docgenParse(content, docgenResolver.findAllComponentDefinitions);
+}
+
+function generateEachComponent(docgen, file, directory) {
+  const doc = {
+    ...docgen,
+    propsDefinition: objectToString(docgen.props).replace(/("\\"|\\""|"'|'")/g, '"'),
+  };
+
+  const normalizedFile = normalizePath(file);
+  const menu = normalizedFile
+    .replace(/\.\.\//g, '')
+    .replace('.react', '')
+    .replace(/\.(js|jsx|tsx)$/, '')
+    .replace(/(?:^|\/)(\w)/g, (_, c) => (c ? ` ${c.toUpperCase()}` : ''))
+    .replace(/(?:^|[-_])(\w)/g, (_, c) => (c ? `${c.toUpperCase()}` : ''))
+    .replace(/\//g, '')
+    .trim();
+
+  const name = menu.replace(/\W/g, '');
+
+  const importFile = normalizePath(getImportFile(directory, file));
+  const componentName = normalizedFile.replace(/.*\//, '').split('.')[0];
+  const simpleProps = objectToString(buildProps(docgen.props));
+  const fullProps = objectToString(buildProps(docgen.props, true));
+
+  return {
+    file: importFile,
+    componentName,
+    menu,
+    name,
+    simpleProps,
+    fullProps,
+    ...doc
+  };
 }
 
 function generateComponentData(config, file, directory) {
@@ -74,38 +108,9 @@ function generateComponentData(config, file, directory) {
   try {
     const docgen = getDocgen(config, filePath);
 
-    const doc = {
-      ...docgen,
-      propsDefinition: objectToString(docgen.props)
-    }
-
-    const normalizedFile = normalizePath(file);
-    const menu = normalizedFile
-      .replace(/\.\.\//g, '')
-      .replace('.react', '')
-      .replace(/\.(js|jsx|tsx)$/, '')
-      .replace(/(?:^|\/)(\w)/g, (_, c) => c ? ` ${c.toUpperCase()}` : '')
-      .replace(/(?:^|[-_])(\w)/g, (_, c) => c ? `${c.toUpperCase()}` : '')
-      .replace(/\//g, '')
-      .trim();
-
-
-    const name = menu.replace(/\W/g, '');
-
-    const importFile = normalizePath(getImportFile(directory, file));
-    const componentName = normalizedFile.replace(/.*\//, '').split('.')[0];
-    const simpleProps = objectToString(buildProps(docgen.props))
-    const fullProps = objectToString(buildProps(docgen.props, true))
-
-    return {
-      file: importFile,
-      componentName,
-      menu,
-      name,
-      simpleProps,
-      fullProps,
-      ...doc,
-    };
+    return docgen.map(component =>
+      generateEachComponent(component, file, directory)
+    );
   }
   catch (error) {
     if (error.message !== 'No suitable component definition found.')
@@ -120,26 +125,26 @@ function getValidFiles(files) {
   return [].concat.apply([], files).filter(file => !!file);
 }
 
-export default function createBlueKit(config) {
+export default function createShowcase(config) {
 
   const {buildCommand, watchCommand, gulp} = config
 
   const gulpRuntime = gulp || packagedGulp
-  const buildCommandName = buildCommand || 'build-bluekit'
-  const watchCommandName = watchCommand || 'watch-bluekit'
+  const buildCommandName = buildCommand || 'build-showcase'
+  const watchCommandName = watchCommand || 'watch-showcase'
 
   const watch = function() {
     const watchPaths = config.paths.map(file => (
       path.relative(process.cwd(), path.join(config.baseDir, file, '**/*.{js,jsx,tsx}'))
     ));
 
-    console.log('Watching BlueKit in and automatically rebuilding on paths:') // eslint-disable-line no-console
+    console.log('Watching UI and automatically rebuilding on paths:') // eslint-disable-line no-console
     console.log(watchPaths.join('\n')); // eslint-disable-line no-console
     return gulpRuntime.watch(watchPaths, [buildCommandName]);
   }
 
   gulpRuntime.task(buildCommandName, () => {
-    console.log('Rebuilding BlueKit'); // eslint-disable-line no-console
+    console.log('Rebuilding UI Showcase'); // eslint-disable-line no-console
     generate();
   })
 
@@ -152,9 +157,11 @@ export default function createBlueKit(config) {
       getAllFilesInDir(config.baseDir, file, config.exclude)
     ));
 
-    const components = getValidFiles(files).map(file => {
-      return generateComponentData(config, file, config.baseDir)
-    }).filter(component => component !== null);
+    const components = getValidFiles(files)
+      .reduce((all, file) => {
+        return all.concat(generateComponentData(config, file, config.baseDir));
+      }, [])
+      .filter(component => component !== null);
 
     const packages = config.nodeModulesDir && config.packages ? config.packages : []
     const packageFiles = packages.map(file => (
@@ -162,9 +169,11 @@ export default function createBlueKit(config) {
         .concat(getAllFilesInDir(config.nodeModulesDir, path.join(file, 'dist')))
     ));
 
-    const packageComponents = getValidFiles(packageFiles).map(file => {
-      return generateComponentData(config, file, config.nodeModulesDir)
-    }).filter(component => component !== null);
+    const packageComponents = getValidFiles(packageFiles)
+      .reduce((all, file) => {
+        return all.concat(generateComponentData(config, file, config.nodeModulesDir));
+      }, [])
+      .filter(component => component !== null);
 
     const indexFile = path.join(config.baseDir, 'componentsIndex.js')
     fs.writeFileSync(

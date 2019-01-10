@@ -1,3 +1,3 @@
-import BlueKit from './app/Page.react';
+import Showcase from './app/Page.react';
 
-export default BlueKit
+export default Showcase;

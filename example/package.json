@@ -43,6 +43,7 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
-    "react-bluekit": "file:../"
+    "react-ui-showcase": "file:../",
+    "yarn": "^1.13.0"
   }
 }

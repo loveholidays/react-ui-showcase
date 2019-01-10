@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-interface BluekitProps {
+interface ShowcaseProps {
   componentsIndex: Object;
   inline?: boolean;
 }
 
-export default class Bluekit extends React.Component<BluekitProps, any> {
+export default class Showcase extends React.Component<ShowcaseProps, any> {
 
 }

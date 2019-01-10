@@ -1,11 +1,11 @@
 {
-  "name": "react-bluekit",
-  "version": "0.4.4",
+  "name": "react-ui-showcase",
+  "version": "0.1.3",
   "description": "Visualisation and Playground generated from Components",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "bin": {
-    "bluekit": "bin/bluekit.js"
+    "react-ui-showcase": "bin/react-ui-showcase.js"
   },
   "scripts": {
     "build": "npm run build:lib",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blueberryapps/react-bluekit.git"
+    "url": "git+https://github.com/loveholidays/react-ui-showcase.git"
   },
   "keywords": [
     "es6",
@@ -38,13 +38,13 @@
     "design",
     "node"
   ],
-  "author": "Ondrej Bartas",
+  "author": "LoveHolidays",
   "typings": "index",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/blueberryapps/react-bluekit/issues"
+    "url": "https://github.com/loveholidays/react-ui-showcase/issues"
   },
-  "homepage": "https://github.com/blueberryapps/react-bluekit#readme",
+  "homepage": "https://github.com/loveholidays/react-ui-showcase#readme",
   "devDependencies": {
     "babel-cli": ">=5",
     "babel-core": ">=5",
@@ -87,8 +87,8 @@
     "react-ace": ">=3",
     "react-color": ">=2",
     "react-copy-to-clipboard": ">=4",
-    "react-docgen": ">=2.14.0",
-    "react-docgen-typescript": "https://github.com/imtoo/react-docgen-typescript.git",
+    "react-docgen": "git://github.com/gatsbimantico/react-docgen.git#dist",
+    "react-docgen-typescript": "github:imtoo/react-docgen-typescript",
     "react-highlight": ">=0.5",
     "react-responsive": "^1.1.3",
     "tosource": ">=1"
